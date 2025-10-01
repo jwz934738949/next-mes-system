@@ -13,16 +13,15 @@ export const menuApi = {
   // 获取树形菜单
   getMenusTree: async (params: AllMenusReq) =>
     await client
-      .get("menus/tree", {
+      .get("menu", {
         searchParams: { ...params },
       })
       .json<ApiResponse<MenuTreeResp[]>>(),
   // 新增菜单
-  addMenuByParentId: async (params: AllMenusReq) => {
+  addMenuByParentId: async (params: AllMenusReq) =>
     await client
-      .post("menus", {
+      .post("menu", {
         json: params,
       })
-      .json<ApiResponse<null>>();
-  },
+      .json<ApiResponse<MenuResp>>(),
 };

@@ -1,0 +1,285 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "mysql",
+  "tables": {
+    "_prisma_migrations": {
+      "name": "_prisma_migrations",
+      "columns": {
+        "id": {
+          "autoincrement": false,
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum": {
+          "autoincrement": false,
+          "name": "checksum",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finished_at": {
+          "autoincrement": false,
+          "name": "finished_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "migration_name": {
+          "autoincrement": false,
+          "name": "migration_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logs": {
+          "autoincrement": false,
+          "name": "logs",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rolled_back_at": {
+          "autoincrement": false,
+          "name": "rolled_back_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "default": "(CURRENT_TIMESTAMP(3))",
+          "autoincrement": false,
+          "name": "started_at",
+          "type": "datetime(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applied_steps_count": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "applied_steps_count",
+          "type": "int unsigned",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "_prisma_migrations_id": {
+          "name": "_prisma_migrations_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "sys_menu": {
+      "name": "sys_menu",
+      "columns": {
+        "menu_id": {
+          "autoincrement": true,
+          "name": "menu_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "menu_name": {
+          "autoincrement": false,
+          "name": "menu_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "menu_type": {
+          "default": "'M'",
+          "autoincrement": false,
+          "name": "menu_type",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "autoincrement": false,
+          "name": "parent_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "path",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "query",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "component": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "component",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "order_num": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "order_num",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "icon",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_frame": {
+          "default": "'1'",
+          "autoincrement": false,
+          "name": "is_frame",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_cache": {
+          "default": "'0'",
+          "autoincrement": false,
+          "name": "is_cache",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "perms": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "perms",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visible": {
+          "default": "'0'",
+          "autoincrement": false,
+          "name": "visible",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "default": "'0'",
+          "autoincrement": false,
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "del_flag": {
+          "default": "'0'",
+          "autoincrement": false,
+          "name": "del_flag",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "create_by": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "create_by",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "create_time": {
+          "default": "(CURRENT_TIMESTAMP(6))",
+          "autoincrement": false,
+          "name": "create_time",
+          "type": "datetime(6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "update_by": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "update_by",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "update_time": {
+          "default": "(CURRENT_TIMESTAMP(6))",
+          "autoincrement": false,
+          "name": "update_time",
+          "type": "datetime(6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "remark": {
+          "default": "''",
+          "autoincrement": false,
+          "name": "remark",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "sys_menu_menu_id": {
+          "name": "sys_menu_menu_id",
+          "columns": [
+            "menu_id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    }
+  },
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {
+      "_prisma_migrations": {
+        "columns": {
+          "started_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "sys_menu": {
+        "columns": {
+          "create_time": {
+            "isDefaultAnExpression": true
+          },
+          "update_time": {
+            "isDefaultAnExpression": true
+          }
+        }
+      }
+    },
+    "indexes": {}
+  }
+}

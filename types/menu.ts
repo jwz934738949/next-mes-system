@@ -26,7 +26,7 @@ export type MenuResp = {
   remark?: string;
 };
 
-export interface MenuTreeResp extends MenuResp {
+export type MenuTreeResp = MenuResp & {
   children?: MenuResp[];
 }
 

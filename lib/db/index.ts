@@ -1,12 +1,11 @@
-import { PrismaClient } from "../generated/prisma";
+import 'dotenv/config';
+import { drizzle } from "drizzle-orm/mysql2";
 
-declare global {
-  var prisma: PrismaClient | undefined;
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is not defined');
 }
 
-export const prismaInstance = globalThis.prisma ?? new PrismaClient();
+const db = drizzle(databaseUrl);
 
-// 非生产模式，将prisma实例挂载到全局
-if (process.env.NODE_ENV !== "production") {
-  globalThis.prisma = prismaInstance;
-}
+export default db;

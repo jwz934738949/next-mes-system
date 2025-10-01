@@ -7,13 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!node_modules",
-      "!.next",
-      "!dist",
-      "!build"
-    ]
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
   },
   "formatter": {
     "enabled": true,
@@ -25,7 +19,15 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noConsole": "off"
+      },
+      "complexity": "off",
+      "nursery": {
+        "useMaxParams": "off"
+      },
+      "style": {
+        "useNamingConvention": "off"
       }
     },
     "domains": {
@@ -40,7 +42,5 @@
       }
     }
   },
-  "extends": [
-    "ultracite"
-  ]
+  "extends": ["ultracite"]
 }
