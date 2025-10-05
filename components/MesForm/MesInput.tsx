@@ -1,10 +1,5 @@
-import { Input } from "../ui/input";
+import { Input, InputProps } from "@heroui/react";
 
-interface MesInputProps extends React.ComponentProps<"input"> {
-  placeholder?: string;
-  className?: string;
-}
-
-const MesInput = (props: MesInputProps) => <Input {...props} />;
+const MesInput = (props: InputProps) => <Input  {...props} className="w-full" />;
 
 export default MesInput;

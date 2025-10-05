@@ -1,6 +1,13 @@
 import MesSvgIcon from "../MesSvgIcon";
-import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetFooter, SheetTitle } from "../ui/sheet";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
 
 type MesDrawerProps = {
   open: boolean;
@@ -9,6 +16,7 @@ type MesDrawerProps = {
   width?: string;
   okText?: string;
   cancelText?: string;
+  loading?: boolean;
   onOk?: () => void;
   onCancel?: () => void;
 };
@@ -20,28 +28,40 @@ const MesDrawer = ({
   width,
   okText,
   cancelText,
+  loading = false,
   onOk,
   onCancel,
 }: MesDrawerProps) => (
-  <Sheet open={open}>
-    <SheetContent className="max-w-auto" style={{ width: width ?? "30%" }}>
-      <div className="flex h-[48px] items-center justify-between border-gray-300 border-b px-3 py-4">
-        <SheetTitle className="font-semibold text-base">
-          {title ?? "标题"}
-        </SheetTitle>
-        <Button className="p-2" onClick={onCancel} variant="ghost">
-          <MesSvgIcon className="text-sm" name="close" />
-        </Button>
-      </div>
-      <div className="h-full w-full px-4">{children}</div>
-      <SheetFooter className="flex justify-end gap-4 border-gray-300 border-t">
-        <Button onClick={onCancel} variant="outline">
-          {cancelText ?? "取消"}
-        </Button>
-        <Button onClick={onOk}>{okText ?? "确定"}</Button>
-      </SheetFooter>
-    </SheetContent>
-  </Sheet>
+  <Drawer isOpen={open} hideCloseButton onOpenChange={() => {
+    if (!loading) {
+      onCancel?.();
+    }
+  }}>
+    <DrawerContent className="max-w-auto" style={{ width: width ?? "30%" }}>
+      {(onClose) => (
+        <>
+          <DrawerHeader className="font-semibold text-base border-b border-gray-300 flex justify-between items-center">
+            {title ?? "标题"}
+            <Button isIconOnly variant="light" className="text-gray-500 hover:text-gray-900" onPress={onCancel}>
+              <MesSvgIcon
+                name="close"
+                className="cursor-pointer"
+              />
+            </Button>
+          </DrawerHeader>
+          <DrawerBody>
+            <div className="h-full w-full p-4 overflow-auto">{children}</div>
+          </DrawerBody>
+          <DrawerFooter className="flex justify-end gap-4 border-gray-300 border-t">
+            <Button isLoading={loading} onPress={onCancel} variant="bordered">
+              {cancelText ?? "取消"}
+            </Button>
+            <Button isLoading={loading} color="primary" onPress={onOk}>{okText ?? "确定"}</Button>
+          </DrawerFooter>
+        </>
+      )}
+    </DrawerContent>
+  </Drawer>
 );
 
 export default MesDrawer;

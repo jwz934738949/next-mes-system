@@ -1,101 +1,120 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import MesDrawer from "@/components/MesDrawer";
-import MesForm from "@/components/MesForm";
-import MesTable from "@/components/MesTable";
-import { Button } from "@/components/ui/button";
-import { HTTP_STATUS_CODE } from "@/lib/constant";
+
+import { useEffect, useRef, useState } from "react";
+import MesTable, { MesTableColumnProps } from "@/components/MesTable";
+import { Button } from "@heroui/button";
 import { menuApi } from "@/lib/request/modules/menu";
-import type { AllMenusReq, MenuTreeResp } from "@/types/menu";
-import { ColumnDef } from "@tanstack/react-table";
+import type { MenuTreeResp } from "@/types/menu";
 import dayjs from "dayjs";
+import { HTTP_STATUS_CODE, MENU_TYPE } from "@/lib/constant";
+import AddMenu, { AddMenuRef } from "./components/AddMenu";
+import { Link } from "@heroui/react";
+import MesConfirmModal, { type MesCOnfirmModalRef } from '@/components/MesConfirmModal';
 
 const Menu = () => {
-  const [showAddTopMenu, setShowAddTopMenu] = useState(false);
-  const [menuData, setMenuData] = useState<MenuTreeResp[]>([]);
-
-  const menuTypeOptions = [
-    { value: "M", label: "目录" },
-    { value: "C", label: "菜单" },
-    { value: "U", label: "按钮" },
-  ];
-
-  const columns: ColumnDef<MenuTreeResp>[] = [
+  const columns: MesTableColumnProps<MenuTreeResp>[] = [
     {
-      header: "菜单名称",
-      accessorKey: "menuName",
+      key: "menuName",
+      label: "菜单名称",
+      width: 250,
     },
     {
-      header: "菜单类型",
-      accessorKey: "menuType",
-      cell: ({ row }) => {
-        const menuType = row.getValue("menuType") as string;
-
-        return <div>{menuTypeOptions.find(item => item.value === menuType)?.label ?? menuType}</div>
+      key: "menuType",
+      label: "菜单类型",
+      width: 120,
+      render: (row) => {
+        return <div>{MENU_TYPE[row.menuType] ?? undefined}</div>
       },
     },
     {
-      header: '菜单编码',
-      accessorKey: "path",
+      key: "path",
+      label: "菜单编码",
+      width: 200,
     },
     {
-      header: '路由编码',
-      accessorKey: "component",
+      key: "component",
+      label: "路由编码",
+      width: 200,
     },
     {
-      header: '排序值',
-      accessorKey: "orderNum",
+      key: "orderNum",
+      label: "排序值",
+      width: 100,
     },
     {
-      header: '权限',
-      accessorKey: "perms",
+      key: "perms",
+      label: "权限",
+      width: 150,
     },
     {
-      header: '是否可见',
-      accessorKey: "visible",
+      key: "visible",
+      label: "是否启用",
+      width: 100,
+      render: (row) => {
+        return <div>{formatNumberToBoolean(row.visible)}</div>
+      }
     },
     {
-      header: '是否启用',
-      accessorKey: "status",
+      key: "createBy",
+      label: "创建人",
+      width: 120,
     },
     {
-      header: '创建人',
-      accessorKey: "createBy",
-    },
-    {
-      header: '创建时间',
-      accessorKey: "createTime",
-      cell: ({ row }) => {
-        const createTime = row.getValue("createTime") as string;
-
+      key: "createTime",
+      label: "创建时间",
+      width: 250,
+      render: (row) => {
+        const createTime = row.createTime
         return <div>{dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")}</div>
       },
     },
     {
-      header: '更新人',
-      accessorKey: "updateBy",
+      key: "updateBy",
+      label: "更新人",
+      width: 120,
     },
     {
-      header: '更新时间',
-      accessorKey: "updateTime",
-      cell: ({ row }) => {
-        const updateTime = row.getValue("updateTime") as string;
-
+      key: "updateTime",
+      label: "更新时间",
+      width: 250,
+      render: (row) => {
+        const updateTime = row.updateTime;
         return <div>{dayjs(updateTime).format("YYYY-MM-DD HH:mm:ss")}</div>
+      },
+    },
+    {
+      key: "action",
+      label: "操作",
+      width: 200,
+      render: (row) => {
+        return <div className="grid grid-cols-2 gap-2">
+          <Link className="cursor-pointer" size="sm" color="primary" onPress={() => {
+            addMenuRef.current?.open(row.menuId, row.menuName);
+          }}>添加子菜单</Link>
+          <Link className="cursor-pointer" size="sm" color="primary" onPress={() => {
+            addMenuRef.current?.open(row.menuId, row.menuName, row);
+          }}>编辑</Link>
+          <Link className="cursor-pointer" size="sm" color="danger" onPress={() => {
+            mesConfirmModalRef.current?.open();
+            setCurrentMenuId(row.menuId);
+          }}>删除</Link>
+        </div>
       },
     }
   ];
 
+  const [menuData, setMenuData] = useState<MenuTreeResp[]>([]);
+  const [deleteModalLoading, setDeleteModalLoading] = useState(false);
+  const [currentMenuId, setCurrentMenuId] = useState(-1);
+  const addMenuRef = useRef<AddMenuRef>(null);
+  const mesConfirmModalRef = useRef<MesCOnfirmModalRef>(null);
 
+  const formatNumberToBoolean = (num: string) => Boolean(num) ? "是" : "否"
 
   useEffect(() => {
     getMenuData();
   }, []);
-
 
   const getMenuData = async () => {
     try {
@@ -109,72 +128,34 @@ const Menu = () => {
     }
   }
 
-  const formSchema = z.object({
-    menuName: z.string().min(1, { message: "菜单名称是必填项" }),
-    menuType: z.string().min(1, { message: "菜单类型是必填项" }),
-  });
-  const formInstance = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      menuName: "",
-      menuType: "",
-    },
-  });
-
-  const handleSubmit = formInstance.handleSubmit(async (values: unknown) => {
+  const handleDelete = async () => {
     try {
-      console.log(values);
-
-      const res = await menuApi.addMenuByParentId(values as AllMenusReq);
+      setDeleteModalLoading(true);
+      const res = await menuApi.deleteMenuByMenuId(currentMenuId);
       if (res.code === HTTP_STATUS_CODE.OK) {
-        console.log("success", res.data);
-      } else {
-        console.error("添加菜单失败");
+        setDeleteModalLoading(false);
+        mesConfirmModalRef.current?.close();
+        getMenuData();
       }
     } catch (error) {
-      console.error("添加菜单失败", error);
+      console.error("删除菜单失败", error);
+      setDeleteModalLoading(false);
     }
-  });
+  }
+
 
   return (
-    <div>
+    <div className="p-4">
       <MesTable
+        rowKey="menuId"
         columns={columns}
         data={menuData}
         headerBtns={
-          <Button onClick={() => setShowAddTopMenu(true)}>添加顶级菜单</Button>
+          <Button color="primary" onPress={() => addMenuRef.current?.open()}>添加顶级菜单</Button>
         }
       />
-      <MesDrawer
-        onCancel={() => setShowAddTopMenu(false)}
-        onOk={handleSubmit}
-        open={showAddTopMenu}
-        title="添加菜单"
-      >
-        <MesForm
-          fields={[
-            {
-              type: "input",
-              name: "menuName",
-              label: "菜单名称",
-              props: {
-                placeholder: "请输入菜单名称",
-              },
-            },
-            {
-              type: "select",
-              name: "menuType",
-              label: "菜单类型",
-              props: {
-                placeholder: "请输入菜单类型",
-                options: menuTypeOptions,
-              },
-            },
-          ]}
-          formInstance={formInstance}
-          formSchema={formSchema}
-        />
-      </MesDrawer>
+      <AddMenu ref={addMenuRef} refresh={getMenuData} />
+      <MesConfirmModal ref={mesConfirmModalRef} title="删除菜单" content="确定要删除该菜单吗?" onConfirm={handleDelete} loading={deleteModalLoading} />
     </div>
   );
 };

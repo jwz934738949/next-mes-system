@@ -8,27 +8,28 @@ export type MenuResp = {
   menuName: string;
   menuType: string;
   parentId: number;
+  parentName?: string;
   path: string;
-  query: string;
   component?: string;
   orderNum: number;
-  icon: string;
+  icon?: string;
   isFrame: string;
   isCache: string;
-  perms: string;
+  perms?: string;
   visible: string;
-  status: string;
-  delFlag: string;
-  createBy: string;
-  createTime: string;
-  updateBy: string;
-  updateTime: string;
+  delFlag?: string;
+  createBy?: string;
+  createTime?: string;
+  updateBy?: string;
+  updateTime?: string;
   remark?: string;
 };
 
 export type MenuTreeResp = MenuResp & {
   children?: MenuResp[];
 }
+
+export type AddMenuReq = Omit<MenuResp, 'menuId'>
 
 export type UseMenuState = {
   menuList: { key: string; icon: string; label: string }[];

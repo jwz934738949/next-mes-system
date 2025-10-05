@@ -38,7 +38,6 @@ export const sysMenu = mysqlTable(
     menuType: char("menu_type", { length: 1 }).default("M").notNull(),
     parentId: int("parent_id").notNull(),
     path: varchar({ length: 200 }).default("").notNull(),
-    query: varchar({ length: 255 }).default("").notNull(),
     component: varchar({ length: 255 }).default("").notNull(),
     orderNum: int("order_num").default(0).notNull(),
     icon: varchar({ length: 100 }).default("").notNull(),
@@ -46,7 +45,6 @@ export const sysMenu = mysqlTable(
     isCache: char("is_cache", { length: 1 }).default("0").notNull(),
     perms: varchar({ length: 100 }).default("").notNull(),
     visible: char({ length: 1 }).default("0").notNull(),
-    status: char({ length: 1 }).default("0").notNull(),
     delFlag: char("del_flag", { length: 1 }).default("0").notNull(),
     createBy: varchar("create_by", { length: 64 }).default("").notNull(),
     createTime: datetime("create_time", { mode: "string", fsp: 6 })

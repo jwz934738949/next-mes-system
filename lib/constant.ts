@@ -31,3 +31,32 @@ export const HTTP_STATUS_CODE = {
   SERVICE_UNAVAILABLE: 503,
   GATEWAY_TIMEOUT: 504,
 };
+
+/**
+ * Form 字段类型
+ */
+export const FORM_FIELD_TYPE = {
+  INPUT: 'input',
+  SELECT: 'select',
+  NUMBER_INPUT: 'number-input',
+  SWITCH: 'switch',
+} as const;
+
+/**
+ * 菜单类型
+ */
+export const MENU_TYPE: Record<string, string> = {
+  M: '目录',
+  C: '菜单',
+  U: '按钮',
+} as const;
+
+/**
+ * 提示弹窗状态
+ */
+export const CONFIRM_TYPE = {
+  INFO: 'info',
+  SUCCESS: 'success',
+  WARNING: 'warning',
+  ERROR: 'error',
+}

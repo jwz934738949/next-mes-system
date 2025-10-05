@@ -1,10 +1,11 @@
 import ky from "ky";
-import { HttpCode } from "@/constants";
+import { HTTP_STATUS_CODE } from "../constant";
+import { addToast } from "@heroui/react";
 
 // 创建自定义实例
 export const request = ky.create({
   prefixUrl: "/api", // 基础 URL
-  timeout: 10_000, // 超时时间（10秒）
+  timeout: 30_000, // 超时时间（30秒）
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,10 +25,21 @@ export const request = ky.create({
         // 示例：处理 401 未授权
         // 示例：处理 401 未授权
         if (
-          response.status === HttpCode.noAuth &&
+          response.status === HTTP_STATUS_CODE.UNAUTHORIZED &&
           typeof window !== "undefined"
         ) {
           window.location.href = "/login";
+        }
+
+        console.log('error', response)
+
+        if (response.status !== HTTP_STATUS_CODE.OK) {
+          addToast({
+            title: "请求失败",
+            description: response.statusText,
+            color: "danger",
+            variant: 'bordered'
+          });
         }
         return response;
       },

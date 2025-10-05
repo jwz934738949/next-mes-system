@@ -1,38 +1,21 @@
-import type { FocusEventHandler } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectItem, SelectProps } from "@heroui/react";
 
-interface MesSelectProps extends React.ComponentProps<typeof Select> {
-  options: {
-    value: string;
-    label: string;
-  }[];
-  placeholder?: string;
-  className?: string;
-  onBlur?: FocusEventHandler<HTMLButtonElement>;
+
+export type MesSelectOptions = {
+  label: string;
+  value: string;
 }
 
-const MesSelect = (props: MesSelectProps) => {
-  const { options, placeholder, onBlur, ...selectProps } = props;
+type MesSelectProps = Omit<SelectProps, 'children'>
+
+const MesSelect = ({ props, options }: { props: MesSelectProps; options: MesSelectOptions[] }) => {
+
 
   return (
-    <Select {...selectProps}>
-      <SelectTrigger className="w-full" onBlur={onBlur}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
+    <Select {...props}>
+      {(options).map((option: MesSelectOptions) => <SelectItem key={option.value}>{option.label}</SelectItem>)}
     </Select>
+
   );
 };
 
