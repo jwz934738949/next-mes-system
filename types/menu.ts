@@ -27,9 +27,9 @@ export type MenuResp = {
 
 export type MenuTreeResp = MenuResp & {
   children?: MenuResp[];
-}
+};
 
-export type AddMenuReq = Omit<MenuResp, 'menuId'>
+export type AddMenuReq = Omit<MenuResp, "menuId">;
 
 export type UseMenuState = {
   menuList: { key: string; icon: string; label: string }[];

@@ -69,9 +69,7 @@
       "compositePrimaryKeys": {
         "_prisma_migrations_id": {
           "name": "_prisma_migrations_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "indexes": {},
@@ -243,9 +241,7 @@
       "compositePrimaryKeys": {
         "sys_menu_menu_id": {
           "name": "sys_menu_menu_id",
-          "columns": [
-            "menu_id"
-          ]
+          "columns": ["menu_id"]
         }
       },
       "indexes": {},

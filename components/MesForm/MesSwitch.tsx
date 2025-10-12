@@ -1,16 +1,5 @@
-import { Switch, SwitchProps } from "@heroui/react"
+import { Switch, type SwitchProps } from "antd";
 
-type MesSwitchProps = SwitchProps & {
-    label?: string;
-    labelPlacement?: 'outside';
-};
-const MesSwitch = (props: MesSwitchProps) => {
-    const { label, labelPlacement, ...rest } = props;
-
-    return <div className="flex flex-col gap-3">
-        {label && <span className="text-small">{label}</span>}
-        <Switch {...rest} />
-    </div>
-}
+const MesSwitch = (props: SwitchProps) => <Switch {...props} />;
 
 export default MesSwitch;

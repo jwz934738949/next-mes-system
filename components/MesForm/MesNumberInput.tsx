@@ -1,9 +1,7 @@
-import { NumberInput, NumberInputProps } from "@heroui/react";
+import { InputNumber, type InputNumberProps } from "antd";
 
-const MesNumberInput = (props: NumberInputProps) => {
-    return (
-        <NumberInput {...props} />
-    );
-}
+const MesNumberInput = (props: InputNumberProps) => (
+  <InputNumber className="!w-full" {...props} />
+);
 
 export default MesNumberInput;

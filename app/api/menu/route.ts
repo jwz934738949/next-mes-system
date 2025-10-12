@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import db from "@/lib/db";
 import { sysMenu } from "@/lib/db/schema";
 import { ResponseHandler } from "@/lib/response";
-import { MenuResp, MenuTreeResp } from "@/types/menu";
+import type { MenuResp, MenuTreeResp } from "@/types/menu";
 
 export async function GET() {
   try {
@@ -15,20 +15,29 @@ export async function GET() {
       .execute();
 
     // 转换为树形结构
-    const buildTree = (menuList: MenuResp[], parentId: number = -1): MenuTreeResp[] => {
+    const buildTree = (
+      menuList: MenuResp[],
+      parentId: number
+    ): MenuTreeResp[] => {
       // 查找当前父节点的所有子节点
-      const children = menuList.filter(menu => menu.parentId === parentId);
+      const children = menuList.filter((menu) => menu.parentId === parentId);
 
       // 递归处理每个子节点，为其添加children属性
-      return children.map((child: MenuResp) => ({
-        ...child,
-        parentName: child.parentId === -1 ? "" : menuList.find(menu => child.parentId === menu.menuId)?.menuName,
-        children: buildTree(menuList, child.menuId)
-      }));
-    }
+      return children.map((child: MenuResp) => {
+        const childTree = buildTree(menuList, child.menuId);
+        return {
+          ...child,
+          parentName:
+            child.parentId === -1
+              ? ""
+              : menuList.find((menu) => child.parentId === menu.menuId)
+                  ?.menuName,
+          children: childTree.length > 0 ? childTree : undefined,
+        };
+      });
+    };
 
-
-    const treeData = buildTree(menuData);
+    const treeData = buildTree(menuData, -1);
 
     // 使用 ResponseHandler 返回成功响应
     return ResponseHandler.success(treeData, "获取菜单数据成功");
@@ -116,7 +125,9 @@ export async function PUT(request: Request) {
         updateBy: body.updateBy ?? "system",
         updateTime: sql`(CURRENT_TIMESTAMP(6))`,
         remark: body.remark ?? "",
-      }).where(sql`menu_id = ${body.menuId}`).execute();
+      })
+      .where(sql`menu_id = ${body.menuId}`)
+      .execute();
 
     const newMenu = await db
       .select()
@@ -124,10 +135,7 @@ export async function PUT(request: Request) {
       .where(sql`menu_id = ${body.menuId}`)
       .execute();
 
-    return ResponseHandler.success(
-      { menu: newMenu[0] },
-      "菜单更新成功"
-    );
+    return ResponseHandler.success({ menu: newMenu[0] }, "菜单更新成功");
   } catch (error) {
     console.error("更新菜单时发生错误:", error);
 
@@ -138,9 +146,7 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(
-  request: Request,
-) {
+export async function DELETE(request: Request) {
   try {
     const body = await request.json();
     const menuId = body.menuId;
@@ -155,10 +161,7 @@ export async function DELETE(
       .where(sql`menu_id = ${menuId}`)
       .execute();
 
-    return ResponseHandler.success(
-      undefined,
-      "菜单删除成功"
-    );
+    return ResponseHandler.success(undefined, "菜单删除成功");
   } catch (error) {
     console.error("删除菜单时发生错误:", error);
 

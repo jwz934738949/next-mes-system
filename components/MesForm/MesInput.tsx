@@ -1,5 +1,5 @@
-import { Input, InputProps } from "@heroui/react";
+import { Input, type InputProps } from "antd";
 
-const MesInput = (props: InputProps) => <Input  {...props} className="w-full" />;
+const MesInput = (props: InputProps) => <Input {...props} className="w-full" />;
 
 export default MesInput;

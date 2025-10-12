@@ -1,161 +1,202 @@
 "use client";
 
-
-import { useEffect, useRef, useState } from "react";
-import MesTable, { MesTableColumnProps } from "@/components/MesTable";
-import { Button } from "@heroui/button";
+import { Button, message } from "antd";
+import type { ColumnProps } from "antd/es/table";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useRef, useState } from "react";
+import MesTable from "@/components/MesTable";
 import { menuApi } from "@/lib/request/modules/menu";
 import type { MenuTreeResp } from "@/types/menu";
-import dayjs from "dayjs";
-import { HTTP_STATUS_CODE, MENU_TYPE } from "@/lib/constant";
-import AddMenu, { AddMenuRef } from "./components/AddMenu";
-import { Link } from "@heroui/react";
-import MesConfirmModal, { type MesCOnfirmModalRef } from '@/components/MesConfirmModal';
+import { showConfirm } from "@/utils/confirmModal";
+import { HTTP_STATUS_CODE, MENU_TYPE } from "@/utils/constant";
+import AddMenu, { type AddMenuRef } from "./components/AddMenu";
 
 const Menu = () => {
-  const columns: MesTableColumnProps<MenuTreeResp>[] = [
+  const columns: ColumnProps<MenuTreeResp>[] = [
     {
       key: "menuName",
-      label: "菜单名称",
+      dataIndex: "menuName",
+      title: "菜单名称",
       width: 250,
     },
     {
       key: "menuType",
-      label: "菜单类型",
+      dataIndex: "menuType",
+      title: "菜单类型",
       width: 120,
-      render: (row) => {
-        return <div>{MENU_TYPE[row.menuType] ?? undefined}</div>
-      },
+      render: (val) => MENU_TYPE[val] ?? undefined,
     },
     {
       key: "path",
-      label: "菜单编码",
+      dataIndex: "path",
+      title: "菜单编码",
       width: 200,
     },
     {
       key: "component",
-      label: "路由编码",
+      dataIndex: "component",
+      title: "路由编码",
       width: 200,
     },
     {
       key: "orderNum",
-      label: "排序值",
+      dataIndex: "orderNum",
+      title: "排序值",
       width: 100,
     },
     {
       key: "perms",
-      label: "权限",
+      dataIndex: "perms",
+      title: "权限",
       width: 150,
     },
     {
       key: "visible",
-      label: "是否启用",
+      dataIndex: "visible",
+      title: "是否启用",
       width: 100,
-      render: (row) => {
-        return <div>{formatNumberToBoolean(row.visible)}</div>
-      }
+      render: (val) => formatNumberToBoolean(val),
     },
     {
       key: "createBy",
-      label: "创建人",
+      dataIndex: "createBy",
+      title: "创建人",
       width: 120,
     },
     {
       key: "createTime",
-      label: "创建时间",
+      dataIndex: "createTime",
+      title: "创建时间",
       width: 250,
-      render: (row) => {
-        const createTime = row.createTime
-        return <div>{dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")}</div>
-      },
+      render: (val) => dayjs(val).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       key: "updateBy",
-      label: "更新人",
+      dataIndex: "updateBy",
+      title: "更新人",
       width: 120,
     },
     {
       key: "updateTime",
-      label: "更新时间",
+      dataIndex: "updateTime",
+      title: "更新时间",
       width: 250,
-      render: (row) => {
-        const updateTime = row.updateTime;
-        return <div>{dayjs(updateTime).format("YYYY-MM-DD HH:mm:ss")}</div>
-      },
+      render: (val) => dayjs(val).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       key: "action",
-      label: "操作",
-      width: 200,
-      render: (row) => {
-        return <div className="grid grid-cols-2 gap-2">
-          <Link className="cursor-pointer" size="sm" color="primary" onPress={() => {
-            addMenuRef.current?.open(row.menuId, row.menuName);
-          }}>添加子菜单</Link>
-          <Link className="cursor-pointer" size="sm" color="primary" onPress={() => {
-            addMenuRef.current?.open(row.menuId, row.menuName, row);
-          }}>编辑</Link>
-          <Link className="cursor-pointer" size="sm" color="danger" onPress={() => {
-            mesConfirmModalRef.current?.open();
-            setCurrentMenuId(row.menuId);
-          }}>删除</Link>
+      dataIndex: "action",
+      title: "操作",
+      width: 250,
+      fixed: "right",
+      render: (_, row) => (
+        <div className="grid grid-cols-2 justify-items-start">
+          <Button
+            className="!p-0"
+            color="primary"
+            onClick={() => {
+              addMenuRef.current?.open(row.menuId, row.menuName);
+            }}
+            size="small"
+            variant="link"
+          >
+            添加子菜单
+          </Button>
+          <Button
+            className="!p-0"
+            color="primary"
+            onClick={() => {
+              addMenuRef.current?.open(row.menuId, row.menuName, row);
+            }}
+            size="small"
+            variant="link"
+          >
+            编辑
+          </Button>
+          <Button
+            className="!p-0"
+            color="danger"
+            onClick={async () => {
+              const result = await showConfirm({
+                title: "删除菜单",
+                content: "确定要删除该菜单吗?",
+                onOk: async () => {
+                  const res = await menuApi.deleteMenuByMenuId(row.menuId);
+                  if (res.code !== HTTP_STATUS_CODE.OK) {
+                    throw new Error(res.message ?? "删除失败");
+                  }
+
+                  message.success(res.message ?? "删除成功");
+                },
+              });
+
+              if (!result.success) {
+                console.error("删除失败", result.error?.message);
+              } 
+            }}
+            size="small"
+            variant="link"
+          >
+            删除
+          </Button>
         </div>
-      },
-    }
+      ),
+    },
   ];
 
   const [menuData, setMenuData] = useState<MenuTreeResp[]>([]);
-  const [deleteModalLoading, setDeleteModalLoading] = useState(false);
-  const [currentMenuId, setCurrentMenuId] = useState(-1);
   const addMenuRef = useRef<AddMenuRef>(null);
-  const mesConfirmModalRef = useRef<MesCOnfirmModalRef>(null);
 
-  const formatNumberToBoolean = (num: string) => Boolean(num) ? "是" : "否"
+  const formatNumberToBoolean = (num: string) => (Boolean(num) ? "是" : "否");
 
-  useEffect(() => {
-    getMenuData();
-  }, []);
-
-  const getMenuData = async () => {
+  const getMenuData = useCallback(async () => {
     try {
       const res = await menuApi.getMenusTree({});
       if (res.code === HTTP_STATUS_CODE.OK) {
-        console.log("success", res.data);
         setMenuData(res.data ?? []);
       }
     } catch (error) {
       console.error("获取菜单数据失败", error);
     }
-  }
+  }, []);
 
-  const handleDelete = async () => {
-    try {
-      setDeleteModalLoading(true);
-      const res = await menuApi.deleteMenuByMenuId(currentMenuId);
-      if (res.code === HTTP_STATUS_CODE.OK) {
-        setDeleteModalLoading(false);
-        mesConfirmModalRef.current?.close();
-        getMenuData();
-      }
-    } catch (error) {
-      console.error("删除菜单失败", error);
-      setDeleteModalLoading(false);
-    }
-  }
+  useEffect(() => {
+    getMenuData();
+  }, [getMenuData]);
 
+  // const handleDelete = async () => {
+  //   try {
+  //     setDeleteModalLoading(true);
+  //     const res = await menuApi.deleteMenuByMenuId(currentMenuId);
+  //     if (res.code === HTTP_STATUS_CODE.OK) {
+  //       setDeleteModalLoading(false);
+  //       mesConfirmModalRef.current?.close();
+  //       getMenuData();
+  //     }
+  //   } catch (error) {
+  //     console.error("删除菜单失败", error);
+  //     setDeleteModalLoading(false);
+  //   }
+  // };
 
   return (
     <div className="p-4">
       <MesTable
-        rowKey="menuId"
         columns={columns}
         data={menuData}
         headerBtns={
-          <Button color="primary" onPress={() => addMenuRef.current?.open()}>添加顶级菜单</Button>
+          <Button
+            color="primary"
+            onClick={() => {
+              addMenuRef.current?.open();
+            }}
+          >
+            添加顶级菜单
+          </Button>
         }
+        rowKey="menuId"
       />
       <AddMenu ref={addMenuRef} refresh={getMenuData} />
-      <MesConfirmModal ref={mesConfirmModalRef} title="删除菜单" content="确定要删除该菜单吗?" onConfirm={handleDelete} loading={deleteModalLoading} />
     </div>
   );
 };

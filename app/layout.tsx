@@ -1,7 +1,9 @@
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "@ant-design/v5-patch-for-react-19";
 import "./globals.css";
-import HeroProviders from "../components/HeroProviders";
+import { ConfigProvider } from "antd";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +30,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HeroProviders>
-          {children}
-        </HeroProviders>
+        <AntdRegistry>
+          <ConfigProvider
+            form={{
+              validateMessages: {
+                // biome-ignore lint/suspicious/noTemplateCurlyInString: <explanation>
+                required: "'${name}' 不能为空",
+              },
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

@@ -1,4 +1,9 @@
-import type { AddMenuReq, AllMenusReq, MenuResp, MenuTreeResp } from "@/types/menu";
+import type {
+  AddMenuReq,
+  AllMenusReq,
+  MenuResp,
+  MenuTreeResp,
+} from "@/types/menu";
 import type { ApiResponse } from "@/types/request";
 import client from "../index";
 
@@ -32,5 +37,6 @@ export const menuApi = {
       })
       .json<ApiResponse<MenuResp>>(),
   // 删除菜单
-  deleteMenuByMenuId: async (menuId: number) => await client.delete("menu", { json: { menuId } }).json<ApiResponse<null>>(),
+  deleteMenuByMenuId: async (menuId: number) =>
+    await client.delete("menu", { json: { menuId } }).json<ApiResponse<null>>(),
 };

@@ -1,100 +1,48 @@
 "use client";
 
-import MesInput from "./MesInput";
-import MesSelect, { MesSelectOptions } from "./MesSelect";
-import { Button, Form } from "@heroui/react";
-import { FORM_FIELD_TYPE } from "@/lib/constant";
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import MesNumberInput from "./MesNumberInput";
-import MesSwitch from "./MesSwitch";
-
+import {
+  Form,
+  type FormInstance,
+  type FormItemProps,
+  type FormProps,
+} from "antd";
+import { forwardRef, useImperativeHandle } from "react";
+import type { MES_FORM_ITEM_TYPE } from "@/utils/constant";
+import MesFormItem from "./MesFormItem";
 
 export type MesFormRef = {
-  onSubmit: () => void;
-  onReset: () => void;
-}
-// 定义字段类型接口，增强类型安全性
-export type MesFormField = {
-  key: string;
-  type: typeof FORM_FIELD_TYPE[keyof typeof FORM_FIELD_TYPE];
-  props?: Record<string, unknown>
+  formInstance: FormInstance;
 };
+
+export type MesFormItemProps = {
+  key: string;
+  type: (typeof MES_FORM_ITEM_TYPE)[keyof typeof MES_FORM_ITEM_TYPE];
+  formItemProps?: FormItemProps;
+  compProps?: Record<string, unknown>;
+};
+
 // 定义表单属性接口
 type MesFormProps = {
-  fields: MesFormField[];
-  handleSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
-};
+  formItems: MesFormItemProps[];
+} & FormProps;
 
-const MesForm = forwardRef<MesFormRef, MesFormProps>(({ fields, handleSubmit }, ref) => {
-  const submitBtnRef = useRef<HTMLButtonElement>(null);
-  const resetBtnRef = useRef<HTMLButtonElement>(null);
+const MesForm = forwardRef<MesFormRef, MesFormProps>(
+  ({ formItems, ...props }, ref) => {
+    const [form] = Form.useForm();
 
-  useImperativeHandle(ref, () => {
-    return {
-      onSubmit: () => {
-        submitBtnRef.current?.click();
-      },
-      onReset: () => {
-        resetBtnRef.current?.click();
-      },
-    };
-  })
+    useImperativeHandle(ref, () => ({
+      formInstance: form,
+    }));
 
-
-  // 渲染表单字段组件
-  const RenderFormField = (
-    { fieldItem }: { fieldItem: MesFormField }
-  ) => {
-    const { type, props = {} } = fieldItem;
-
-    if (type === FORM_FIELD_TYPE.INPUT) {
-      return (
-        <MesInput
-          {...props}
-        />
-      );
-    }
-
-    if (type === FORM_FIELD_TYPE.SELECT) {
-      return (
-        <MesSelect props={props} options={props.options as MesSelectOptions[]} />
-      );
-    }
-
-    if (type === FORM_FIELD_TYPE.NUMBER_INPUT) {
-      return (
-        <MesNumberInput {...props} />
-      );
-    }
-
-    if (type === FORM_FIELD_TYPE.SWITCH) {
-      return <MesSwitch {...props} />
-    }
-
-    return null;
-  };
-
-
-
-  return (
-    <Form
-      className="gap-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit?.(e);
-      }}
-    >
-      {fields.map((fieldItem) => (
-        <RenderFormField
-          key={fieldItem.key}
-          fieldItem={fieldItem}
-        />
-      ))}
-      <Button ref={submitBtnRef} type="submit" hidden>submit</Button>
-      <Button ref={resetBtnRef} type="reset" hidden>reset</Button>
-    </Form>
-  );
-})
+    return (
+      <Form form={form} layout="vertical" {...props}>
+        {formItems.map((formItem) => (
+          <MesFormItem formItem={formItem} key={formItem.key} />
+        ))}
+      </Form>
+    );
+  }
+);
 
 MesForm.displayName = "MesForm";
 export default MesForm;

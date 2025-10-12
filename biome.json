@@ -24,7 +24,8 @@
       },
       "complexity": "off",
       "nursery": {
-        "useMaxParams": "off"
+        "useMaxParams": "off",
+        "noShadow": "off"
       },
       "style": {
         "useNamingConvention": "off"

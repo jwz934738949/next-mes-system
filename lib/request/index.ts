@@ -1,6 +1,6 @@
+import { message } from "antd";
 import ky from "ky";
-import { HTTP_STATUS_CODE } from "../constant";
-import { addToast } from "@heroui/react";
+import { HTTP_STATUS_CODE } from "../../utils/constant";
 
 // 创建自定义实例
 export const request = ky.create({
@@ -9,6 +9,7 @@ export const request = ky.create({
   headers: {
     "Content-Type": "application/json",
   },
+
   // 请求拦截器
   hooks: {
     beforeRequest: [
@@ -31,15 +32,8 @@ export const request = ky.create({
           window.location.href = "/login";
         }
 
-        console.log('error', response)
-
         if (response.status !== HTTP_STATUS_CODE.OK) {
-          addToast({
-            title: "请求失败",
-            description: response.statusText,
-            color: "danger",
-            variant: 'bordered'
-          });
+          message.error(response.statusText ?? "请求失败！");
         }
         return response;
       },

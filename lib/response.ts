@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ApiResponse, PageResponse } from "../types/request";
-import { HTTP_STATUS_CODE } from "./constant";
+import { HTTP_STATUS_CODE } from "../utils/constant";
 
 /**
  * API 响应工具类

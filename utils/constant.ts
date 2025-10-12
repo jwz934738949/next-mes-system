@@ -35,28 +35,38 @@ export const HTTP_STATUS_CODE = {
 /**
  * Form 字段类型
  */
-export const FORM_FIELD_TYPE = {
-  INPUT: 'input',
-  SELECT: 'select',
-  NUMBER_INPUT: 'number-input',
-  SWITCH: 'switch',
+export const MES_FORM_ITEM_TYPE = {
+  INPUT: "input",
+  SELECT: "select",
+  NUMBER_INPUT: "number-input",
+  SWITCH: "switch",
 } as const;
 
 /**
  * 菜单类型
  */
 export const MENU_TYPE: Record<string, string> = {
-  M: '目录',
-  C: '菜单',
-  U: '按钮',
+  M: "目录",
+  C: "菜单",
+  U: "按钮",
 } as const;
 
 /**
  * 提示弹窗状态
  */
 export const CONFIRM_TYPE = {
-  INFO: 'info',
-  SUCCESS: 'success',
-  WARNING: 'warning',
-  ERROR: 'error',
-}
+  INFO: "info",
+  SUCCESS: "success",
+  WARNING: "warning",
+  ERROR: "error",
+};
+
+/**
+ * iconfont图标
+ */
+export const ICONFONT_ICON = {
+  SYSTEM: "system",
+  UNFOLD: "unfold",
+  INDENT: "indent",
+  OUTDENT: "outdent",
+};
